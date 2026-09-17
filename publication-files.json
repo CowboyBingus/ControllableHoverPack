@@ -1,6 +1,7 @@
 [
   ".gitattributes",
   ".gitignore",
+  "CHANGELOG.md",
   "CONTRIBUTING.md",
   "INSTALL.txt",
   "README.md",

@@ -83,7 +83,56 @@ settings.cancel(api,G,target,state);put(G+0x276c8d0,p(0));count=#writes
 assert(settings.restore(api,G,state) and not state.lease and #writes==count)
 -- Refuse full storage and non-data pages without changing anything.
 api,target,put,writes=fixture();put(J+4,u(1));put(J+152,u(1))
-assert(not pcall(settings.cancel,api,G,target,{}) and #writes==0)
+assert(not settings.cancel(api,G,target,{}) and #writes==0)
 api,target,put,writes=fixture();api.writable_data=function()return false end
 assert(not pcall(settings.cancel,api,G,target,{}) and #writes==0)
+-- Mission teardown can make the settings map temporarily unreadable while a
+-- cancellation still needs restoring. Keep its lease and retry read-only.
+api,target,put,writes=fixture();state={};settings.cancel(api,G,target,state)
+local read=api.read;count=#writes
+api.read=function(a,n)if a==J+96 then return nil end;return read(a,n)end
+local ok,result=pcall(settings.restore,api,G,state)
+assert(ok and result==false,'transient restoration read must not stop the hook')
+assert(state.lease and #writes==count and state.restore_waits==1 and state.last_restore_error)
+api.read=read;assert(settings.restore(api,G,state) and not state.lease and duration(api,D)==6)
+-- If the old manager disappears during that wait, abandon its lease without
+-- writing through stale addresses, even when the old records are unreadable.
+settings.cancel(api,G,target,state);api.read=function(a,n)if a==J+96 then return nil end;return read(a,n)end
+assert(not settings.restore(api,G,state));count=#writes;put(G+0x276c8d0,p(J+0x10000))
+assert(settings.restore(api,G,state) and not state.lease and #writes==count)
+-- Read-only preflight failure between snapshot and cancellation is retryable.
+api,target,put,writes=fixture();state={};read=api.read
+api.read=function(a,n)if a==J+96 then return nil end;return read(a,n)end
+ok,result=pcall(settings.cancel,api,G,target,state)
+assert(ok and result==false and not state.lease and #writes==0,'unavailable preflight must not stop the hook')
+api.read=read;assert(settings.cancel(api,G,target,state));settings.restore(api,G,state)
+assert(duration(api,D)==6)
+-- Exercise deferred cleanup through the production update wrapper, retaining
+-- the same hook while the next mission supplies a fresh flight identity.
+local source=assert(arg[1]);local patch=assert(loadfile(source..'/hover_data.lua'))()
+patch.policy=assert(loadfile(source..'/cancel.lua'))();patch.settings=settings
+api,target,put,writes=fixture();read=api.read
+target.guards={};target.active=true;target.flight=true;target.down=true
+local sample=target;patch.snapshot=function()return sample,'waiting_for_mission'end
+api.focused=function()return true end;api.time=function()return 1 end
+api.module=function(name)return name and G or 2 end;api.module_hash=function(m)return tostring(m)end
+local e=setmetatable({CowboyBingusModLoader={api=1,version=12},print=function()end,
+    os={getenv=function()end}}, {__index=_G})
+e._G=e;e.update=function(...)return ... end
+setfenv(assert(loadfile(source..'/archive_loader.lua'))(),e)(function()return api end,patch,
+    {revision='test',game_sha256=tostring(G),exe_sha256='2'})
+local function tick()e.update(1/60)end
+tick();target.down=false;tick();target.down=true;tick()
+assert(e.HoverPackCancel.cancellations==1 and e.HoverPackCancel.lease)
+sample=nil;api.read=function(a,n)if a==J+96 then return nil end;return read(a,n)end
+count=#writes;tick();tick()
+assert(e.HoverPackCancel.status=='restore_pending' and e.HoverPackCancel.lease and #writes==count)
+api.read=read;tick()
+assert(not e.HoverPackCancel.lease and duration(api,D)==6)
+sample=target;target.key='second-mission';tick()
+assert(e.HoverPackCancel.cancellations==1,'held activation cancelled the new mission flight')
+target.down=false;tick();target.down=true;tick()
+assert(e.HoverPackCancel.cancellations==2 and e.HoverPackCancel.lease)
+target.active=false;target.flight=false;tick();assert(duration(api,D)==6 and not e.HoverPackCancel.lease)
+print('PASS: pending restoration recovers through the installed hook before cancellation in the next mission')
 print('PASS: native timeout/landing predicate, per-pack isolation, restoration/next flight, relocation, later edits, recycled IDs and partial-write rollback')

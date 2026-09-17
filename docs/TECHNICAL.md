@@ -2,6 +2,16 @@
 
 Release v1, 2026-09-16. Steam build 24826606, EXE 1.8.45317.0. Separately built module registered with Bingus Shared Loader v11 / API 1.
 
+## v1.1 mission-transition correction (internal QA)
+
+Players reported that cancellation worked during the first mission and then reverted to vanilla behavior. No affected-player logs were available, so the exact live trigger remains unconfirmed. Internal regressions reproduced two permanent-disable paths in v1: a transient avatar/pack registry mismatch escaped the read-only snapshot into the loader's terminal error handler, and an unavailable settings record during restoration did the same. Restoring valid data did not restart cancellation because the installed hook retained `stopped=true`.
+
+Snapshot and preflight inspection failures now reject that update without writing, clear pending input edges, and allow a fresh validated attempt. Restoration inspection failures retain the identity lease and defer new cancellation until cleanup can finish or the original manager/entity is proven gone. Mutation/rollback failures, original-update failures, and shutdown retain their terminal behavior. Native descent, landing assistance, duration values and pack flags are unchanged.
+
+The regression suite keeps the production update hook installed across first-flight cancellation, invalid avatar/pack registries, null equipment pointers, removed local players, ship return, replaced pack generations and subsequent flights. It also covers persistent invalid data without writes, a restoration read failure followed by recovery, manager replacement without stale writes, and cancellation in the next mission after deferred cleanup. Both transition regressions failed against v1 before the fix. Existing input, native landing predicate, per-pack isolation, rollback and loader failure tests remain required.
+
+Diagnostic logs retain `last_snapshot_error`, `last_settings_error` and `last_restore_error`, with corresponding wait counters, so later healthy frames do not erase the last read failure. The v1.1 test package is marked `runtime_verified=false`. In-game acceptance still requires two consecutive missions without restarting: cancel and land in each, verify recharge and normal next-flight duration, then repeat after equipment replacement or reinforcement. Disable the Megapack during standalone QA because its bundled v1 otherwise may win resource selection.
+
 ## Cause established by the live comparison
 
 The user reported v0.1 cancelled hover but lost the native slow landing. A 120-second VM_READ capture recorded 6,768 samples of normal expiry and manual cancellation with v0.1 installed. Representative transitions, relative to recording start:
@@ -54,6 +64,10 @@ The reader follows the player manager's local unit through the entity-owner map 
 Input helper `0x57fb00` maps pair `(2,15)` to processed input slot 15. The held duration is at +8 in its 32-byte record. Cancellation requires release followed by a fresh press during powered hover, once per flight. Initial hold, ordinary jump packs, grounded movement, native landing assistance, ragdoll, swimming and focus loss cannot issue cancellation. The cancellation lease survives falling/landing and focus loss, preventing a second request during braking. Guards recheck relevant identity, attachment, input and flags immediately before requesting the duration change. They are consistency checks, not synchronization primitives.
 
 ## Validation and remaining acceptance
+
+The v1.2 candidate also corrects mission filtering. The supported game's native player routine at `game.dll+0x602d20` accepts mission type values 1 through 7 when the active flag is nonzero. A read-only capture during Evacuate High-Value Assets showed type 2; the old exact-type-1 gate rejected every otherwise valid snapshot. Regression coverage exercises all seven types, inactive and unsupported modes, repeated mission transitions, cancellation and restoration. Replaying a captured type-2 flight against Lua-table memory permits cancellation and restores the original per-pack settings; it does not prove live landing behavior.
+
+Transient snapshot and preflight reads now wait and retry through the existing update hook. A pending restoration remains owned until it can be checked again. Mutation and rollback failures retain terminal handling. Status logs include snapshot waits, restoration waits and the current valid mission type in the shared log folder provided by loader v14. These changes still require consecutive-mission in-game QA.
 
 The build runs focused checks for input edges; exact pack/holder identity; local index one; multiplayer prefix ordering; descent and landing exclusion; native lift predicate; per-pack isolation; next-flight restoration; relocation; later edits; recycled IDs; partial-write rollback; callback return values/failures/cleanup; package identity; bytecode mode; dependencies; privacy and hashes.
 

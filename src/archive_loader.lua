@@ -10,11 +10,14 @@ return function(create_api,patch,build)
         last_report=now
         print('[ControllableHoverPack] '..build.revision..': '..status)
         pcall(function()
-            local directory=os.getenv('LOCALAPPDATA');if not directory then return end
-            local f=io.open(directory..'/ControllableHoverPack.log','w');if not f then return end
+            local logger=rawget(_G,'CowboyBingusModLoader')
+            local f=logger and logger.open_log and logger.open_log('ControllableHoverPack.log');if not f then return end
             f:write(build.revision..'\n'..status..'\n')
-            for _,key in ipairs({'updates','cancellations','restorations'}) do
+            for _,key in ipairs({'updates','cancellations','restorations','snapshot_waits','settings_waits','restore_waits'}) do
                 f:write(key..'='..tostring(state[key] or 0)..'\n')
+            end
+            for _,key in ipairs({'snapshot_status','mission_type','last_snapshot_error','last_settings_error','last_restore_error'}) do
+                f:write(key..'='..tostring(state[key] or 'none')..'\n')
             end
             f:close()
         end)

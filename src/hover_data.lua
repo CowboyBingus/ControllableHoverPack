@@ -35,7 +35,10 @@ function M.snapshot(api,game)
         end
     end
     local mode=read(global(0x276c3d0),0x44,true)
-    if u(mode,8)==0 or u(mode,0x40)~=1 then return nil,'waiting_for_mission'end
+    -- +0x40 is a mission type, not a boolean. Native player logic at 602d20
+    -- accepts 1..7; Evacuate High-Value Assets uses 2 on the supported build.
+    s.mission_type=u(mode,0x40)
+    if u(mode,8)==0 or s.mission_type<1 or s.mission_type>7 then return nil,'waiting_for_mission'end
     local pm=global(0x276c190);local counts=read(pm+0x84,8,true)
     assert(u(counts,0)<=4 and u(counts,4)<=4,'Unsupported player count')
     if u(counts,0)==0 or u(counts,4)==0 then return nil,'waiting_for_player'end
@@ -95,8 +98,16 @@ end
 function M.apply(api,game,exe,state)
     local ok,s,reason=pcall(M.snapshot,api,game)
     if not ok then
-        if type(s)=='table' and s.hover_wait then reason=s.reason;s=nil else error(s,0)end
+        -- Registries can disagree briefly while a mission/player is removed.
+        -- This phase only reads: reject the snapshot and retry next update.
+        if type(s)=='table' and s.hover_wait then reason=s.reason else
+            state.snapshot_waits=(state.snapshot_waits or 0)+1
+            state.last_snapshot_error=tostring(s);reason='waiting_for_game_data'
+        end
+        s=nil
     end
+    state.snapshot_status=s and 'valid' or reason
+    state.mission_type=s and s.mission_type or nil
     if state.lease then
         if s and s.key==state.lease.key and s.active then return 'native_descent' end
         if not M.settings.restore(api,game,state) then return 'restore_pending' end
@@ -109,7 +120,9 @@ function M.apply(api,game,exe,state)
     if not api.focused() or not M.current(api,s) then
         M.policy.step(state,nil);return 'snapshot_changed'
     end
-    if not M.settings.cancel(api,game,s,state) then return 'snapshot_changed'end
+    if not M.settings.cancel(api,game,s,state) then
+        M.policy.step(state,nil);return 'snapshot_changed'
+    end
     state.cancellations=(state.cancellations or 0)+1
     return 'cancel_requested'
 end

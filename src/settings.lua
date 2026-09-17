@@ -67,7 +67,14 @@ function M.inspect(api,game,target)
     return s
 end
 function M.cancel(api,game,target,state)
-    local s=assert(M.inspect(api,game,target),'Hover pack changed')
+    -- A mission transition can invalidate data after the input snapshot.
+    -- Retry read-only preflight; errors after mutation still reach cleanup.
+    local ok,s=pcall(M.inspect,api,game,target)
+    if not ok or not s then
+        state.settings_waits=(state.settings_waits or 0)+1
+        state.last_settings_error=ok and 'Hover pack changed' or tostring(s)
+        return false
+    end
     local original=s.bytes:sub(157,160);local duration=ffi.new('float[1]');ffi.copy(duration,original,4)
     assert(duration[0]>1/1024 and duration[0]<86400 and s.bytes:byte(154)==1,'Unsupported hover duration mode')
     if not current(api,s) then return false end
@@ -102,7 +109,13 @@ function M.cancel(api,game,target,state)
 end
 function M.restore(api,game,state)
     local lease=state.lease;if not lease then return true end
-    local s=M.inspect(api,game,lease)
+    -- Retain the identity lease until we can resolve it or prove it is gone.
+    -- Never turn a temporarily unavailable read into a permanent hook stop.
+    local ok,s=pcall(M.inspect,api,game,lease)
+    if not ok then
+        state.restore_waits=(state.restore_waits or 0)+1
+        state.last_restore_error=tostring(s);return false
+    end
     if not s or s.create then state.lease=nil;return true end
     if not current(api,s) then return false end
     -- Do not overwrite a later native/other-mod edit, or use a stale address.
