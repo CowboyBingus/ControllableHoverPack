@@ -1,3 +1,10 @@
+# v1.3
+
+- Disable periodic diagnostic file writes and console output by default.
+- Keep startup, failure and shutdown reports available.
+- Preserve hover cancellation and native landing assistance.
+- Offline regression checks cover this update; live frame-time verification remains pending.
+
 # v1.2
 
 - Fixes manual hover cancellation on defense missions, including Evacuate High-Value Assets.

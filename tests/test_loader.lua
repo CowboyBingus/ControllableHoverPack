@@ -27,3 +27,26 @@ assert(cleanups==3)
 patch.apply=function()calls=calls+1 end;e.update(1/60);assert(calls==n)
 e=environment({api=1,version=12});before=e.update;install(e,function()error('hash failed')end);assert(e.update==before)
 print('PASS: loader version/hash gates, single update boundary, return values, duplicate load, failure isolation and shutdown')
+
+-- Routine gameplay must not write diagnostics unless explicitly enabled.
+for _,diagnostics in ipairs({false,true})do
+    local now,opens,profiles=0,0,0
+    local e=setmetatable({print=function()end},{__index=_G});e._G=e
+    e.CowboyBingusDiagnostics=diagnostics
+    e.CowboyBingusModLoader={api=1,version=99,open_log=function()
+        opens=opens+1;return {write=function()end,close=function()end}
+    end}
+    e.update=function()return 1,nil,3 end;e.shutdown=function()return 4,nil,6 end
+    local api={time=function()return now end,module=function(n)return n or 'exe'end,
+        module_hash=function()return 'hash'end,bind=function()return {}end,read=function()return ''end}
+    local patch={interval=1/30,apply=function()return 'waiting_for_mission' end,
+        profiler={new=function()profiles=profiles+1;return {}end},stop=function()return true end,cleanup=function()return true end}
+    setfenv(assert(loadfile(source..'/archive_loader.lua')),e)()(function()return api end,patch,
+        {revision='fixture',game_sha256='hash',exe_sha256='hash'})
+    local startup=opens
+    for i=1,600 do now=i/60;local a,b,c=e.update(1/60);assert(a==1 and b==nil and c==3)end
+    assert(diagnostics and opens>startup or not diagnostics and opens==startup,'routine log writes require opt-in')
+
+    e.shutdown();assert(opens>startup,'shutdown report remains available')
+end
+print('PASS: silent default, opt-in diagnostics, shutdown report and callback returns')

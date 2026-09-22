@@ -6,7 +6,7 @@ Logs: %LOCALAPPDATA%/CowboyBingus/Helldivers2/Logs
 
 
 
-Controllable Hover Pack - v1.2
+Controllable Hover Pack - v1.3
 
 
 
@@ -14,7 +14,7 @@ Press Space again during hover-pack flight to descend early while preserving the
 
 
 
-Close Helldivers 2. Import Controllable-Hover-Pack-v1.2.zip in Arsenal or HD2MM. Install Bingus Shared Loader v14 or newer separately:
+Close Helldivers 2. Import Controllable-Hover-Pack-v1.3.zip in Arsenal or HD2MM. Install Bingus Shared Loader v14 or newer separately:
 
 https://github.com/CowboyBingus/BingusSharedLoader/releases/latest
 

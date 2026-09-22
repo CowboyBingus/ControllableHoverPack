@@ -5,6 +5,7 @@ return function(create_api,patch,build)
     local api,last_report
     local function report(status,force)
         state.status=status
+        if not force and rawget(_G,'CowboyBingusDiagnostics')~=true then return end
         local now=api and api.time() or 0
         if not force and last_report and now-last_report<2 then return end
         last_report=now

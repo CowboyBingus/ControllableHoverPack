@@ -10,3 +10,5 @@ Press Space again during hover-pack flight to descend early while preserving the
 - **Normal duration on the next flight.** Ending one flight early does not shorten the next.
 
 If you have rebound the Jump Pack action, use that binding instead of Space.
+
+Release **v1.3** includes input/performance fixes. Offline checks cover this revision; in-game frame-time validation is pending. Routine diagnostics are off by default; developers can set `CowboyBingusDiagnostics = true` before initialization to enable them.
