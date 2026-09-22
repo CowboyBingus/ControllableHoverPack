@@ -1,0 +1,3 @@
+- Update compatibility for game build 25327279.
+- Restore manual hover cancellation and landing assistance.
+- Correct the flight and movement checks.

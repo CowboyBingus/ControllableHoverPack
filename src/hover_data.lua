@@ -34,39 +34,39 @@ function M.snapshot(api,game)
             if u(row,0)==empty then return nil end
         end
     end
-    local mode=read(global(0x276c3d0),0x44,true)
+    local mode=read(global(0x33266a0),0x44,true)
     -- +0x40 is a mission type, not a boolean. Native player logic at 602d20
     -- accepts 1..7; Evacuate High-Value Assets uses 2 on the supported build.
     s.mission_type=u(mode,0x40)
     if u(mode,8)==0 or s.mission_type<1 or s.mission_type>7 then return nil,'waiting_for_mission'end
-    local pm=global(0x276c190);local counts=read(pm+0x84,8,true)
+    local pm=global(0x3326468);local counts=read(pm+0x84,8,true)
     assert(u(counts,0)<=4 and u(counts,4)<=4,'Unsupported player count')
     if u(counts,0)==0 or u(counts,4)==0 then return nil,'waiting_for_player'end
     local player=read(ptr(read(pm+0xe8,8,true)),24,true)
     if bit.band(player:byte(21),1)==0 then return nil,'waiting_for_player'end
     local unit=u(read(pm+0x3a8,4,true),0)
     if unit==0x7fff then return nil,'waiting_for_avatar'end
-    local owner=global(0x276f0c0)
-    local ei=lookup(read(owner+0xf21a88,20,true),unit,1048576)
+    local owner=global(0x346bf98)
+    local ei=lookup(read(owner+0xf22ec8,20,true),unit,1048576)
     if not ei then return nil,'waiting_for_avatar'end
     assert(ei<262144,'Unsupported entity index')
-    local avatar=read(owner+0xf31ad8+ei*24,24,true)
+    local avatar=read(owner+0xf32f18+ei*24,24,true)
     if avatar:sub(1,8)~=AVATAR or bit.band(avatar:byte(21),1)==0 then return nil,'waiting_for_avatar'end
-    local eid=u(avatar,8);local am=global(0x276ca30)
+    local eid=u(avatar,8);local am=global(0x3326d20)
     local ai=lookup(read(am+0xf8,20,true),eid,64)
     if not ai then return nil,'waiting_for_avatar'end
     local count=u(read(am+0x6c,4,true),0)
     assert(count<=8 and ai<count,'Unsupported avatar index')
     assert(read(ptr(read(am+0x110+ai*8,8,true)),24,true)==avatar,'Avatar identity mismatch')
     -- Equipped backpack, then reverse ownership: never choose the first pack.
-    local equipment=global(0x276c468)
+    local equipment=global(0x3326738)
     local qi=lookup(read(equipment+40,20,true),eid,8192)
     if not qi then return nil,'no_backpack'end
     assert(qi<4096,'Unsupported equipment index')
     assert(read(ptr(read(ptr(read(equipment+64,8,true))+qi*8,8,true)),24,true)==avatar,'Equipment identity mismatch')
     local pack_id=u(read(ptr(read(equipment+80,8,true))+qi*48+12,4,true),0)
     if pack_id==0 or pack_id==0xffffffff then return nil,'no_backpack'end
-    local jm=global(0x276c8d0)
+    local jm=global(0x3326bb8)
     local ji=lookup(read(jm+32,20,true),pack_id,128)
     if not ji then return nil,'no_jump_pack'end
     local counts_j=read(jm+16,8,true);local total,owned=u(counts_j,0),u(counts_j,4)
@@ -76,7 +76,7 @@ function M.snapshot(api,game)
     assert(u(entity,8)==pack_id,'Pack identity mismatch')
     if entity:sub(1,8)~=HOVER then return nil,'not_hover_pack'end
     if bit.band(entity:byte(21),1)==0 then return nil,'pack_not_owned'end
-    local attach=global(0x276cad0)
+    local attach=global(0x3326dc0)
     local bi=lookup(read(attach+32,20,true),pack_id,8192)
     if not bi then return nil,'pack_not_attached'end
     assert(bi<4096,'Unsupported attachment index')
@@ -90,8 +90,8 @@ function M.snapshot(api,game)
     assert(held==held and held>=0 and held<86400,'Invalid jump input')
     s.down=held>0
     s.active=ps:byte(1)==1
-    s.flight=s.active and ps:byte(2)==0 and ps:byte(5)==1 and bit.band(u(flags,8),0x80000000)~=0
-        and bit.band(u(flags,12),6)==0 and bit.band(u(flags,8),0x10000000)==0
+    s.flight=s.active and ps:byte(2)==0 and ps:byte(5)==1 and bit.band(u(flags,12),4)~=0
+        and bit.band(u(flags,12),0x30)==0 and bit.band(u(flags,8),0x80000000)==0
     s.key=avatar..entity..tostring(jm);s.manager=jm;s.pack=pack_id;s.identity=entity:sub(1,20)
     return s
 end

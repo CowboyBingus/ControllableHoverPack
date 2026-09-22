@@ -15,7 +15,7 @@ function M.inspect(api,game,target)
         s.guards[#s.guards+1]={address=a,bytes=b};return b
     end
     local function ptr(b,o)return assert(api.pointer(b,o),'Hover settings pointer unavailable')end
-    if api.pointer(read(game+0x276c8d0,8))~=target.manager then return nil end
+    if api.pointer(read(game+0x3326bb8,8))~=target.manager then return nil end
     local jm=target.manager
     local function slot(offset,key)
         local h=read(jm+offset,20);local cap,empty,mult=u(h,8),u(h,12),u(h,16)
@@ -54,8 +54,8 @@ function M.inspect(api,game,target)
         s.count_address=jm+152;s.count_bytes=word(n)
         -- Same six-entry resource table as game.dll+508c60. Copy the current
         -- resource, including other archive mods; never write shared settings.
-        local owner=ptr(read(game+0x276f0c0,8))
-        local resources=ptr(read(owner+0xf11890,8));local headers=read(resources,96)
+        local owner=ptr(read(game+0x346bf98,8))
+        local resources=ptr(read(owner+0xf12cb8,8));local headers=read(resources,96)
         for i=0,5 do
             if headers:sub(i*16+1,i*16+8)==target.identity:sub(1,8) then
                 local index=u(headers,i*16+8);assert(index<3,'Invalid hover resource index')

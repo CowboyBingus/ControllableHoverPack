@@ -1,3 +1,9 @@
+# v1.5
+
+- Update compatibility for game build 25327279.
+- Restore manual hover cancellation and landing assistance.
+- Correct the flight and movement checks.
+
 # v1.3
 
 - Disable periodic diagnostic file writes and console output by default.

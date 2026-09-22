@@ -15,7 +15,7 @@ local function fixture()
         if key then put(address+8*((key*2)%8),u(key)..u(index))end
     end
     local identity=('cf66db1c4f0fc85e'):gsub('..',function(x)return string.char(tonumber(x,16))end)..u(524)..u(250)..u(5)
-    put(G+0x276c8d0,p(J));put(G+0x276f0c0,p(E));put(E+0xf11890,p(R))
+    put(G+0x3326bb8,p(J));put(G+0x346bf98,p(E));put(E+0xf12cb8,p(R))
     put(J+4,u(32));put(J+12,u(1));put(J+152,u(0));put(J+160,p(D))
     map(32,J+0x1000,524,0,0);map(96,J+0x1100,nil,nil,0);map(128,J+0x1200,nil,nil,0xffffffff)
     put(J+56,p(J+0x1300));put(J+0x1300,p(J+0x1400));put(J+0x1400,identity)
@@ -79,7 +79,7 @@ api.write=function()return false end
 assert(not pcall(settings.restore,api,G,state) and state.lease)
 api.write=write;assert(settings.restore(api,G,state) and not state.lease and duration(api,D)==6)
 -- A destroyed manager makes its old lease irrelevant, without dereferencing it.
-settings.cancel(api,G,target,state);put(G+0x276c8d0,p(0));count=#writes
+settings.cancel(api,G,target,state);put(G+0x3326bb8,p(0));count=#writes
 assert(settings.restore(api,G,state) and not state.lease and #writes==count)
 -- Refuse full storage and non-data pages without changing anything.
 api,target,put,writes=fixture();put(J+4,u(1));put(J+152,u(1))
@@ -98,7 +98,7 @@ api.read=read;assert(settings.restore(api,G,state) and not state.lease and durat
 -- If the old manager disappears during that wait, abandon its lease without
 -- writing through stale addresses, even when the old records are unreadable.
 settings.cancel(api,G,target,state);api.read=function(a,n)if a==J+96 then return nil end;return read(a,n)end
-assert(not settings.restore(api,G,state));count=#writes;put(G+0x276c8d0,p(J+0x10000))
+assert(not settings.restore(api,G,state));count=#writes;put(G+0x3326bb8,p(J+0x10000))
 assert(settings.restore(api,G,state) and not state.lease and #writes==count)
 -- Read-only preflight failure between snapshot and cancellation is retryable.
 api,target,put,writes=fixture();state={};read=api.read

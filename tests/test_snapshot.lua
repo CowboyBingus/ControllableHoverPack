@@ -17,16 +17,16 @@ local function map(a,key,index)
     put(t+8*(key%8),u(key)..u(index))
 end
 local mode,pm,em,am,eq,jm,attach=0x30000000,0x31000000,0x32000000,0x34000000,0x35000000,0x36000000,0x37000000
-for rva,a in pairs({[0x276c3d0]=mode,[0x276c190]=pm,[0x276f0c0]=em,[0x276ca30]=am,[0x276c468]=eq,[0x276c8d0]=jm,[0x276cad0]=attach})do put(G+rva,p(a))end
+for rva,a in pairs({[0x33266a0]=mode,[0x3326468]=pm,[0x346bf98]=em,[0x3326d20]=am,[0x3326738]=eq,[0x3326bb8]=jm,[0x3326dc0]=attach})do put(G+rva,p(a))end
 zero(mode,0x44);put(mode+8,u(1));put(mode+0x40,u(1))
 put(pm+0x84,u(2)..u(2));put(pm+0xe8,p(0x40000000));ent(0x40000000,'1111111111111111',10,99,true)
-put(pm+0x3a8,u(391));map(em+0xf21a88,391,2)
-local avatar=em+0xf31ad8+48;ent(avatar,'4d1c334d294dfa97',513,391,true)
+put(pm+0x3a8,u(391));map(em+0xf22ec8,391,2)
+local avatar=em+0xf32f18+48;ent(avatar,'4d1c334d294dfa97',513,391,true)
 map(am+0xf8,513,1);put(am+0x6c,u(2));put(am+0x118,p(avatar)) -- local index ONE
 map(eq+40,513,1);put(eq+64,p(0x41000000));put(0x41000008,p(avatar));put(eq+80,p(0x42000000));put(0x42000000+48+12,u(524))
 map(jm+32,524,1);put(jm+16,u(2)..u(2));put(jm+56,p(0x43000000));put(0x43000008,p(0x44000000));ent(0x44000000,'5ec80f4f1cdb66cf',524,250,true)
 map(attach+32,524,1);put(attach+64,p(0x45000000));put(0x45000000+48+4,u(513))
-local flags=am+0x53d900+0x1238+0xf80;zero(flags,24);put(flags+8,u(0x80000004))
+local flags=am+0x53d900+0x1238+0xf80;zero(flags,24);put(flags+8,u(4));put(flags+12,u(4))
 put(jm+80,p(0x46000000));put(0x46000005,'\1\0\1\0\1')
 local input=am+0x150+0xa7aec+0x1b68+15*32;zero(input,32)
 local focused=true;local commands=0;local missing
@@ -65,7 +65,7 @@ patch.apply(api,G,0,state);assert(commands==1)
 put(input+8,f(0));patch.apply(api,G,0,state);put(input+8,f(.01));patch.apply(api,G,0,state);assert(commands==2)
 -- Native action inhibited during ragdoll, swim, ordinary grounded movement.
 for _,offset in ipairs({12,8})do
- local old=api.read(flags+offset,4);put(flags+offset,u(offset==12 and 2 or 0x90000004));assert(not patch.snapshot(api,G).flight);put(flags+offset,old)
+ local old=api.read(flags+offset,4);put(flags+offset,u(offset==12 and 0x14 or 0x80000004));assert(not patch.snapshot(api,G).flight);put(flags+offset,old)
 end
 put(0x46000005,'\0\0\1\0\0');assert(not patch.snapshot(api,G).flight)
 -- Landing assistance remains an active flight, but is not a new cancel window.

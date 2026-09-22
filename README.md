@@ -1,3 +1,4 @@
+
 ![Controllable Hover Pack](assets/banner.png)
 
 # Controllable Hover Pack
@@ -11,4 +12,6 @@ Press Space again during hover-pack flight to descend early while preserving the
 
 If you have rebound the Jump Pack action, use that binding instead of Space.
 
-Release **v1.3** includes input/performance fixes. Offline checks cover this revision; in-game frame-time validation is pending. Routine diagnostics are off by default; developers can set `CowboyBingusDiagnostics = true` before initialization to enable them.
+See [validation coverage](docs/MIGRATION_VALIDATION.md) for the scope of the release checks. Routine diagnostics are off by default; developers can set `CowboyBingusDiagnostics = true` before initialization to enable them.
+
+Current version: **v1.5**, for game build **25327279**. See [changes](CHANGELOG.md) and [validation coverage](docs/MIGRATION_VALIDATION.md).
