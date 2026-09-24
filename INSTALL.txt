@@ -1,16 +1,46 @@
-Controllable Hover Pack v1.5
+Current local compatibility candidate for Steam build 25480438 / EXE 1.8.46015.0. Offline checks passed; live gameplay verification is pending.
 
-Supports Helldivers 2 Steam build 25327279 / game 1.8.45850.0.
-Requires Bingus Shared Loader v16 or newer / API 1.
+Mission compatibility repair for Steam 25480438. Offline checks pass; installed gameplay verification is pending.
 
-1. Close Helldivers 2 and use one mod manager.
-2. Replace the previous package with Controllable-Hover-Pack-v1.5.zip.
-3. Enable this package and Bingus Shared Loader.
-4. With Arsenal's default priority, put the loader last (at the bottom).
-   With first-mod priority enabled, put the loader first.
-5. Purge / Deploy, then start the game normally.
+TEST BUILD: mission-mode and centralized-log corrections. In-game validation pending.
 
-To remove or change options, close the game, disable the package, and
-Purge / Deploy again. Keep the loader enabled while other mods need it.
+Requires Bingus Shared Loader v16 for the shared log folder.
 
 Logs: %LOCALAPPDATA%/CowboyBingus/Helldivers2/Logs
+
+
+
+Controllable Hover Pack - v1.6
+
+
+
+Press Space again during hover-pack flight to descend early while preserving the pack's native landing assistance.
+
+
+
+Close Helldivers 2. Import Controllable-Hover-Pack-v1.6.zip in Arsenal or HD2MM. Install Bingus Shared Loader v17 or newer separately:
+
+https://github.com/CowboyBingus/BingusSharedLoader/releases/latest
+
+
+
+Enable both packages, then deploy and restart. With default Arsenal priority, put Bingus Shared Loader last. Replace any previous Hover Pack Cancel entry; the package keeps its original manager identity.
+
+
+
+After takeoff, release Space, then press it again to begin descending. The game's Jump Pack binding is respected if rebound. Native landing assistance remains active, and the next flight keeps its normal duration.
+
+
+
+Replace older standalone or megapack copies so manager priority selects this version.
+
+
+
+Supports Steam build 25480438 / EXE 1.8.46015.0. Diagnostic status, counts and retained read errors are saved to %LOCALAPPDATA%/CowboyBingus/Helldivers2/Logs/ControllableHoverPack.log.
+
+
+
+Disable the package and redeploy with the game closed to uninstall.
+
+Logs: %LOCALAPPDATA%\CowboyBingus\Helldivers2\Logs
+Requires Bingus Shared Loader v17 or newer for this log folder.

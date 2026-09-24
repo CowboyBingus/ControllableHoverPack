@@ -1,3 +1,3 @@
-- Update compatibility for game build 25327279.
-- Restore manual hover cancellation and landing assistance.
-- Correct the flight and movement checks.
+- Refresh the game-build checks for Steam build 25480438.
+- Preserve manual descent and native landing assistance.
+- Offline builds and package checks pass; live gameplay validation remains pending.

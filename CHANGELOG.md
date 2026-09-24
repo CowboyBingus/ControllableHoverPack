@@ -1,3 +1,9 @@
+# v1.6
+
+- Refresh the game-build checks for Steam build 25480438.
+- Preserve manual descent and native landing assistance.
+- Offline builds and package checks pass; live gameplay validation remains pending.
+
 # v1.5
 
 - Update compatibility for game build 25327279.
