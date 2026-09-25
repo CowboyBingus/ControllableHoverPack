@@ -1,44 +1,26 @@
-Current local compatibility candidate for Steam build 25480438 / EXE 1.8.46015.0. Offline checks passed; live gameplay verification is pending.
+Release for Steam build 25480438 / EXE 1.8.46015.0. Offline checks passed; checked in live play.
 
-Mission compatibility repair for Steam 25480438. Offline checks pass; installed gameplay verification is pending.
-
-TEST BUILD: mission-mode and centralized-log corrections. In-game validation pending.
+Performance update for Steam 25480438. Offline checks pass; early descent was confirmed live.
 
 Requires Bingus Shared Loader v16 for the shared log folder.
 
 Logs: %LOCALAPPDATA%/CowboyBingus/Helldivers2/Logs
 
-
-
-Controllable Hover Pack - v1.6
-
-
+Controllable Hover Pack - v1.7
 
 Press Space again during hover-pack flight to descend early while preserving the pack's native landing assistance.
 
-
-
-Close Helldivers 2. Import Controllable-Hover-Pack-v1.6.zip in Arsenal or HD2MM. Install Bingus Shared Loader v17 or newer separately:
+Close Helldivers 2. Import Controllable-Hover-Pack-v1.7.zip in Arsenal or HD2MM. Install Bingus Shared Loader v17 or newer separately:
 
 https://github.com/CowboyBingus/BingusSharedLoader/releases/latest
 
-
-
 Enable both packages, then deploy and restart. With default Arsenal priority, put Bingus Shared Loader last. Replace any previous Hover Pack Cancel entry; the package keeps its original manager identity.
-
-
 
 After takeoff, release Space, then press it again to begin descending. The game's Jump Pack binding is respected if rebound. Native landing assistance remains active, and the next flight keeps its normal duration.
 
-
-
 Replace older standalone or megapack copies so manager priority selects this version.
 
-
-
 Supports Steam build 25480438 / EXE 1.8.46015.0. Diagnostic status, counts and retained read errors are saved to %LOCALAPPDATA%/CowboyBingus/Helldivers2/Logs/ControllableHoverPack.log.
-
-
 
 Disable the package and redeploy with the game closed to uninstall.
 

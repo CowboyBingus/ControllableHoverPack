@@ -1,6 +1,6 @@
-> Current local compatibility candidate for Steam build 25480438 / EXE 1.8.46015.0. Offline checks passed; live gameplay verification is pending.
+> Release for Steam build 25480438 / EXE 1.8.46015.0. Offline checks passed; checked in live play.
 
-Mission repair v1.6: Repairs current-build flight, ragdoll, dive and swimming checks. The production reader recognizes an airborne Hover Pack in captured mission data; installed cancel behavior still needs confirmation.
+Performance update v1.7: Skips window-focus system calls on frames without a hover pack and decodes game data without extra copies or allocations. Behavior is unchanged; early descent was confirmed live.
 
 ![Controllable Hover Pack](assets/banner.png)
 
@@ -15,6 +15,6 @@ Press Space again during hover-pack flight to descend early while preserving the
 
 If you have rebound the Jump Pack action, use that binding instead of Space.
 
-Release **v1.6** includes input/performance fixes. Offline checks cover this revision; in-game frame-time validation is pending. Routine diagnostics are off by default; developers can set `CowboyBingusDiagnostics = true` before initialization to enable them.
+Release **v1.7** reduces per-frame overhead. Offline checks cover this revision; in-game frame-time validation is pending. Routine diagnostics are off by default; developers can set `CowboyBingusDiagnostics = true` before initialization to enable them.
 
-Current version: **v1.6**, for game build **25480438**. See [changes](CHANGELOG.md) and [validation coverage](docs/MIGRATION_VALIDATION.md).
+Current version: **v1.7**, for game build **25480438**. See [changes](CHANGELOG.md) and [validation coverage](docs/MIGRATION_VALIDATION.md).

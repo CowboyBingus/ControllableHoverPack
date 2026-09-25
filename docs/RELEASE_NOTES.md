@@ -1,3 +1,3 @@
-- Refresh the game-build checks for Steam build 25480438.
-- Preserve manual descent and native landing assistance.
-- Offline builds and package checks pass; live gameplay validation remains pending.
+- Skips the window-focus system calls on frames without a hover pack; the focus gate is unchanged whenever a pack is present.
+- Decodes fields without copying the rest of each buffer, and decodes pointers without allocating.
+- Behavior is unchanged; early descent was confirmed live.

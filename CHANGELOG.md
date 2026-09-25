@@ -1,3 +1,9 @@
+# v1.7
+
+- Skips the window-focus system calls on frames without a hover pack; the focus gate is unchanged whenever a pack is present.
+- Decodes fields without copying the rest of each buffer, and decodes pointers without allocating.
+- Behavior is unchanged; early descent was confirmed live.
+
 # v1.6
 
 - Refresh the game-build checks for Steam build 25480438.
