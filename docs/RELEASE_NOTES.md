@@ -1,3 +1,8 @@
-- Skips the window-focus system calls on frames without a hover pack; the focus gate is unchanged whenever a pack is present.
-- Decodes fields without copying the rest of each buffer, and decodes pointers without allocating.
-- Behavior is unchanged; early descent was confirmed live.
+- With a hover pack worn, each frame re-reads the pack where it last found it: 16 memory reads instead of 41 (82 during a flight).
+- The per-frame check no longer creates Lua garbage, and the first early descent with each pack makes 5 memory-protection checks instead of 9.
+- Errors from the game or from other mods now pass through unchanged instead of looking like errors in this mod.
+- After such an error the mod restores the hover duration, pauses and starts afresh once 60 frames run without error.
+- An error in the mod itself no longer stops it at once; eight errors close together still stop it.
+- Another mod's Windows declarations can no longer break this mod's memory access.
+- Requires Bingus Shared Loader v18 or newer.
+- Measured in live play: 0.017 ms per frame in client missions (0.038 before) and 0.007 on the ship.

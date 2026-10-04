@@ -1,6 +1,6 @@
-> Release for Steam build 25480438 / EXE 1.8.46015.0. Offline checks passed; checked in live play.
+> Release for Steam build 25480438 / EXE 1.8.46015.0. Offline checks passed; checked in live play. Requires Bingus Shared Loader v18 or newer (v19 is current).
 
-Performance update v1.7: Skips window-focus system calls on frames without a hover pack and decodes game data without extra copies or allocations. Behavior is unchanged; early descent was confirmed live.
+Performance and resilience update v1.8: keeps the hover pack's layout instead of locating it every frame, allocates nothing per frame, and pauses instead of stopping after errors elsewhere in the update chain. Early descent was confirmed live on earlier releases.
 
 ![Controllable Hover Pack](assets/banner.png)
 
@@ -15,6 +15,12 @@ Press Space again during hover-pack flight to descend early while preserving the
 
 If you have rebound the Jump Pack action, use that binding instead of Space.
 
-Release **v1.7** reduces per-frame overhead. Offline checks cover this revision; in-game frame-time validation is pending. Routine diagnostics are off by default; developers can set `CowboyBingusDiagnostics = true` before initialization to enable them.
+Release **v1.8** lowers the per-frame cost. Measured in live play: 0.017 ms per frame in client missions (0.038 before) and 0.007 on the ship. Routine diagnostics are off by default; developers can set `CowboyBingusDiagnostics = true` before initialization to enable them.
 
-Current version: **v1.7**, for game build **25480438**. See [changes](CHANGELOG.md) and [validation coverage](docs/MIGRATION_VALIDATION.md).
+Current version: **v1.8**, for game build **25480438**. See [changes](CHANGELOG.md) and [validation coverage](docs/MIGRATION_VALIDATION.md).
+
+**AI disclosure:** Claude Opus 5.5 assisted with research, implementation, tests and documentation.
+
+## License
+
+Zero-Clause BSD (0BSD): use, copy, modify and distribute for any purpose, with no conditions. See `LICENSE`.
