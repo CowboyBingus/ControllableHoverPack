@@ -1,6 +1,6 @@
 # Controllable Hover Pack: implementation and evidence
 
-Release v1.8 for Steam build 25480438, EXE 1.8.46015.0. Requires Bingus Shared Loader v18 or newer (v19 is current); the module's own load check accepts loader-v11 / API 1 or newer. The first release (v1, 2026-09-16) targeted Steam build 24826606; native function addresses below marked as from that build come from its analysis and are not called by the mod.
+Release v1.8.1 for Steam build 25480438, EXE 1.8.46015.0. Requires Bingus Shared Loader v18 or newer (v19 is current); the module's own load check accepts loader-v11 / API 1 or newer. The first release (v1, 2026-09-16) targeted Steam build 24826606; native function addresses below marked as from that build come from its analysis and are not called by the mod.
 
 ## v1.1 mission-transition correction (internal QA)
 
@@ -80,12 +80,15 @@ The mod vendors Bingus Shared Runtime v1, three files kept byte-identical to the
 
 Calls per update through the installed hook, as the budget tests pin them (`tests/frame_budget.lua` in `test_snapshot.lua` and `test_settings.lua`). In game a read (ReadProcessMemory) costs about 1-2 us and a protection query (VirtualQuery, right before every write) about 0.29 ms. The other Windows calls (the focus check's two, WriteProcessMemory, and the clock's QueryPerformanceCounter, read for a status line, or on every update when diagnostics are enabled) and the Lua around them are unmeasured in game.
 
+Between flights an idle gate (`M.idle` in `src/hover_data.lua`, called first in the loader's update) answers updates after a full check that found nothing to do, while no cancellation is held: 59 updates outside a mission, 29 in a mission. With a hover pack worn it reads only the pack's state row; an active state or a failed read ends the wait and runs the full check on the same update. A mission start is therefore seen up to 59 updates late (during the drop) and a hover pack picked up up to 29 updates late; the window counts updates, never the clock. `tests/test_idle_gate.lua` compares the gated mod with v1.8 frame by frame.
+
 | Path | Calls per update | In game |
 | --- | --- | --- |
-| Outside a mission | 2 reads | about 2-4 us |
-| No backpack (after the first frame in a mission) | 8 reads | about 8-16 us |
-| Hover pack worn, not flying, or in its native descent | 16 reads (41 on the first frame in a mission or after the layout changed) | about 16-32 us |
-| Flight | 16 reads, one focus check | about 16-32 us, plus the focus check (unmeasured) |
+| Outside a mission | 2 reads on every 60th update, none on the 59 between | about 2-4 us per 60 updates |
+| No player yet, no backpack, another backpack, or a hover pack not owned or not attached (after the first frame in a mission) | 8-13 reads on every 30th update (8 without a backpack), none on the 29 between | about 8-26 us per 30 updates |
+| Hover pack worn, not flying | 1 read (the pack's 5-byte state row) on 29 of every 30 updates, 16 reads on the 30th (41 on the first frame in a mission or after the layout changed) | about 1-2 us, plus 16-32 us per 30 updates |
+| Native descent | 16 reads | about 16-32 us |
+| Flight | 16 reads, one focus check (17 reads on the update the flight starts) | about 16-32 us, plus the focus check (unmeasured) |
 | Early-descent press, first with a pack | 126 reads, 5 queries, 5 writes, two focus checks | about 1.45 ms in queries, once per pack |
 | Early-descent press, later | 103 reads, 1 query, 1 write, two focus checks | about 0.29 ms in queries |
 | Landing after an early descent (restore) | 47 reads, 1 query, 1 write | about 0.29 ms in queries, once per flight |

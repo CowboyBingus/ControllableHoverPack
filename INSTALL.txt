@@ -1,16 +1,16 @@
 Release for Steam build 25480438 / EXE 1.8.46015.0. Offline checks passed; checked in live play.
 
-Performance and resilience update for Steam 25480438. Early descent was confirmed live.
+Performance update for Steam 25480438. Early descent was confirmed live.
 
 Requires Bingus Shared Loader v18 or newer (v19 is current).
 
 Logs: %LOCALAPPDATA%/CowboyBingus/Helldivers2/Logs
 
-Controllable Hover Pack - v1.8
+Controllable Hover Pack - v1.8.1
 
 Press Space again during hover-pack flight to descend early while preserving the pack's native landing assistance.
 
-Close Helldivers 2. Import Controllable-Hover-Pack-v1.8.zip in Arsenal or HD2MM. Install Bingus Shared Loader v18 or newer separately:
+Close Helldivers 2. Import Controllable-Hover-Pack-v1.8.1.zip in Arsenal or HD2MM. Install Bingus Shared Loader v18 or newer separately:
 
 https://github.com/CowboyBingus/BingusSharedLoader/releases/latest
 

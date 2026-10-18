@@ -1,8 +1,1 @@
-- With a hover pack worn, each frame re-reads the pack where it last found it: 16 memory reads instead of 41 (82 during a flight).
-- The per-frame check no longer creates Lua garbage, and the first early descent with each pack makes 5 memory-protection checks instead of 9.
-- Errors from the game or from other mods now pass through unchanged instead of looking like errors in this mod.
-- After such an error the mod restores the hover duration, pauses and starts afresh once 60 frames run without error.
-- An error in the mod itself no longer stops it at once; eight errors close together still stop it.
-- Another mod's Windows declarations can no longer break this mod's memory access.
-- Requires Bingus Shared Loader v18 or newer.
-- Measured in live play: 0.017 ms per frame in client missions (0.038 before) and 0.007 on the ship.
+- Between hover-pack flights most frames read only the pack's state, or nothing on the ship and without a hover pack, and the game's Lua compiler no longer keeps retrying to compile the mod's per-frame code. Measured in game: 0.009 ms per frame before and 0.003 now on the ship, 0.016-0.018 before and 0.003-0.004 now in missions without a hover pack.
