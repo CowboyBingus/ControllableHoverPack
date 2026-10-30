@@ -1,1 +1,0 @@
-- Between hover-pack flights most frames read only the pack's state, or nothing on the ship and without a hover pack, and the game's Lua compiler no longer keeps retrying to compile the mod's per-frame code. Measured in game: 0.009 ms per frame before and 0.003 now on the ship, 0.016-0.018 before and 0.003-0.004 now in missions without a hover pack.
